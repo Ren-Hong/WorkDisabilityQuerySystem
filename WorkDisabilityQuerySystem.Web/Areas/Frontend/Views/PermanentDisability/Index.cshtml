@@ -1,0 +1,89 @@
+@model WorkDisabilityQuerySystem.Web.Areas.Frontend.Models.RatingInput
+@{
+    ViewData["Title"] = "永久失能查表";
+}
+<div class="rating-page mx-auto">
+    <form id="rating-form" asp-area="Frontend" asp-controller="PermanentDisabilityApi" asp-action="Calculate" method="post" class="card border-0 shadow-sm">
+        <div class="card-body p-3 p-md-4">
+            <div data-rating-error class="text-danger" role="alert"></div>
+            <div class="row g-3">
+                <div class="col-12 col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Wpi" class="form-label">全人損傷百分比（WPI）</label>
+                        <div class="input-group">
+                            <input asp-for="Wpi" class="form-control" type="number" min="1" max="100" step="1" inputmode="numeric" required />
+                            <span class="input-group-text">%</span>
+                        </div>
+                        <span asp-validation-for="Wpi" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ImpairmentCode" class="form-label">損傷項目</label>
+                        <select asp-for="ImpairmentCode" class="form-select" data-rating-select
+                                data-url="@Url.Action("Impairments", "PermanentDisabilityApi")"
+                                data-placeholder="搜尋損傷編碼或名稱">
+                            <option value=""></option>
+                        </select>
+                        <span asp-validation-for="ImpairmentCode" class="text-danger"></span>
+                    </div>
+                    <div id="affected-function" class="mt-3" hidden>
+                        <label asp-for="AffectedFunction" class="form-label">受影響的功能</label>
+                        <select asp-for="AffectedFunction" class="form-select">
+                            <option value="">請選擇</option>
+                            <option value="speech">吞嚥或說話</option>
+                            <option value="neck">頭部轉動</option>
+                            <option value="shoulder">肩部活動</option>
+                        </select>
+                        <span asp-validation-for="AffectedFunction" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="OccupationId" class="form-label">職業與行業</label>
+                        <select asp-for="OccupationId" class="form-select" data-rating-select
+                                data-url="@Url.Action("Occupations", "PermanentDisabilityApi")"
+                                data-placeholder="搜尋職稱、行業或群組">
+                            <option value=""></option>
+                        </select>
+                        <span asp-validation-for="OccupationId" class="text-danger"></span>
+                    </div>
+                    <label asp-for="Age" class="form-label">受傷時年齡</label>
+                    <div class="input-group">
+                        <input asp-for="Age" class="form-control" type="number" min="0" step="1" inputmode="numeric" required />
+                        <span class="input-group-text">歲</span>
+                    </div>
+                    <span asp-validation-for="Age" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="d-grid d-md-flex mt-4">
+                <button type="submit" class="btn btn-primary px-4">查詢 PD</button>
+            </div>
+        </div>
+    </form>
+    <section id="rating-result" class="card border-0 shadow-sm mt-4" aria-labelledby="rating-result-title" tabindex="-1" hidden>
+        <div class="card-body p-3 p-md-4">
+            <h2 id="rating-result-title" class="h5 mb-2">永久失能評定（PD）</h2>
+            <p class="display-5 text-primary fw-semibold mb-3" data-result="pd"></p>
+            <dl class="row mb-0">
+                <dt class="col-sm-7">原始 WPI</dt>
+                <dd class="col-sm-5" data-result="wpi"></dd>
+                <dt class="col-sm-7" data-result="fecLabel"></dt>
+                <dd class="col-sm-5" data-result="fec"></dd>
+                <dt class="col-sm-7" data-result="occupationLabel"></dt>
+                <dd class="col-sm-5" data-result="occupation"></dd>
+                <dt class="col-sm-7" data-result="ageLabel"></dt>
+                <dd class="col-sm-5" data-result="pd"></dd>
+            </dl>
+        </div>
+    </section></div>
+@section Styles {
+    <link rel="stylesheet" href="~/lib/select2/select2.min.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/lib/select2/select2.min.js" asp-append-version="true"></script>
+    <script src="~/js/disability-rating.js" asp-append-version="true"></script>
+}
+
+
+

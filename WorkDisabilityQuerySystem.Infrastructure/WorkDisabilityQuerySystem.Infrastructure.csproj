@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../WorkDisabilityQuerySystem.Application/WorkDisabilityQuerySystem.Application.csproj" />
+    <PackageReference Include="Dapper" Version="2.1.89" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.1.2" />
+  </ItemGroup>
+</Project>

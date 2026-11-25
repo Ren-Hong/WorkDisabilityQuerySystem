@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="WorkDisabilityQuerySystem.Domain/WorkDisabilityQuerySystem.Domain.csproj" />
+  <Project Path="WorkDisabilityQuerySystem.Application/WorkDisabilityQuerySystem.Application.csproj" />
+  <Project Path="WorkDisabilityQuerySystem.Infrastructure/WorkDisabilityQuerySystem.Infrastructure.csproj" />
+  <Project Path="WorkDisabilityQuerySystem.Web/WorkDisabilityQuerySystem.Web.csproj" />
+</Solution>

@@ -1,0 +1,100 @@
+@{
+    var area = ViewContext.RouteData.Values["area"]?.ToString();
+    var isFrontend = area == "Frontend";
+    var isBackend = area == "Backend";
+    var isLogin = area == "Auth" && ViewContext.RouteData.Values["controller"]?.ToString() == "Login";
+    var isAdmin = User.IsInRole(WorkDisabilityQuerySystem.Domain.Accounts.Account.AdministratorLevel);
+    var displayName = User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value;
+    var accountName = string.IsNullOrWhiteSpace(displayName) || displayName == "未設定姓名"
+        ? User.Identity?.Name : displayName;
+}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>職災失能查表系統</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="~/img/wdqs-favicon.png" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @await RenderSectionAsync("Styles", required: false)
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="wdqs-shell @(isBackend ? "wdqs-backend" : "wdqs-frontend")">
+    @if (!isLogin)
+    {
+        <header class="wdqs-header shadow-sm">
+            <nav class="wdqs-header-nav px-4 py-3" aria-label="主選單">
+                <div class="wdqs-brand-group">
+                    @if (isFrontend || isBackend)
+                    {
+                        <button id="wdqs-sidebar-toggle" class="btn wdqs-outline wdqs-menu-toggle" type="button"
+                                aria-label="切換側邊選單" aria-controls="wdqs-sidebar" aria-expanded="false">
+                            <span aria-hidden="true"></span>
+                        </button>
+                    }
+                    <a class="wdqs-brand" asp-area="Frontend" asp-controller="Home" asp-action="Index">職災失能查表系統</a>
+                </div>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="wdqs-actions">
+                        <span class="wdqs-user-info">登入者：@accountName</span>
+                        <span class="wdqs-user-info">權限：@(isAdmin ? "管理員" : "一般使用者")</span>
+                        @if (isBackend)
+                        {
+                            <a class="btn btn-primary btn-sm" asp-area="Frontend" asp-controller="Home" asp-action="Index">前台作業</a>
+                        }
+                        else if (isAdmin)
+                        {
+                            <a class="btn btn-success btn-sm" asp-area="Backend" asp-controller="Accounts" asp-action="Index">後台管理</a>
+                        }
+                        <form asp-area="Auth" asp-controller="Login" asp-action="Logout" method="post" class="m-0">
+                            <button type="submit" class="btn btn-secondary btn-sm">登出</button>
+                        </form>
+                    </div>
+                }
+            </nav>
+        </header>
+    }
+    @if (isFrontend || isBackend)
+    {
+        <div class="wdqs-workspace">
+            <aside id="wdqs-sidebar" class="wdqs-sidebar" inert>
+                <nav aria-label="@(isBackend ? "後台功能" : "前台功能")">
+                    @if (isBackend)
+                    {
+                        <a class="wdqs-nav-link" asp-area="Backend" asp-controller="Accounts" asp-action="Index"
+                           aria-current="page">
+                            <span class="wdqs-nav-icon wdqs-nav-icon-account" aria-hidden="true"></span>
+                            <span>帳號管理</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="wdqs-nav-link" asp-area="Frontend" asp-controller="PermanentDisability" asp-action="Index"
+                           aria-current="page">
+                            <span class="wdqs-nav-icon wdqs-nav-icon-search" aria-hidden="true"></span>
+                            <span>永久失能查詢</span>
+                        </a>
+                    }
+                </nav>
+            </aside>
+            <main class="wdqs-workspace-main">
+                <div class="container py-4">@RenderBody()</div>
+            </main>
+        </div>
+        <script src="~/js/frontend-shell.js" asp-append-version="true"></script>
+    }
+    else
+    {
+        <main class="@(isLogin ? "wdqs-login-main" : "container py-4")">
+            @RenderBody()
+        </main>
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>WorkDisabilityQuerySystem.Web-c353fc8c-6d6b-4038-889b-92351e984a93</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../WorkDisabilityQuerySystem.Application/WorkDisabilityQuerySystem.Application.csproj" />
+    <ProjectReference Include="../WorkDisabilityQuerySystem.Infrastructure/WorkDisabilityQuerySystem.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
