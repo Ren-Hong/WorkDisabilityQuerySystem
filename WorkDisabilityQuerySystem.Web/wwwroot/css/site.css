@@ -61,6 +61,7 @@ html {
 }
 
 .wdqs-header-buttons {
+  position: relative;
   display: flex;
   flex: 0 0 auto;
   align-items: center;
@@ -69,8 +70,50 @@ html {
 }
 
 @media (max-width: 767.98px) {
+  .wdqs-header .wdqs-header-nav {
+    flex-wrap: nowrap;
+    gap: .5rem;
+    padding-inline: .65rem !important;
+  }
+
+  .wdqs-header .wdqs-brand-group {
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: .45rem;
+  }
+
+  .wdqs-header .wdqs-brand {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1rem;
+  }
+
+  .wdqs-header .wdqs-menu-toggle {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+  }
+
   .wdqs-actions {
-    width: 100%;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+  }
+
+  .wdqs-header-buttons {
+    gap: .35rem;
+    white-space: nowrap;
+  }
+
+  .wdqs-header .wdqs-account-toggle {
+    min-width: 32px;
+    min-height: 32px;
+  }
+
+  .wdqs-header-buttons .btn-sm {
+    padding-inline: .4rem;
   }
 }
 
@@ -81,14 +124,56 @@ html {
   font-weight: 700;
 }
 
-.wdqs-user-info {
-  color: #355f52;
-  font-size: .92rem;
-  font-weight: 600;
+.wdqs-account-toggle {
+  display: grid;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  place-items: center;
+  list-style: none;
 }
 
-.wdqs-backend .wdqs-user-info {
+.wdqs-account-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.wdqs-account-toggle .wdqs-nav-icon {
+  width: 18px;
+}
+
+.wdqs-account-tip {
+  position: absolute;
+  z-index: 10;
+  inset-block-start: calc(100% + .5rem);
+  inset-inline-end: 0;
+  width: max-content;
+  max-width: min(16rem, 75vw);
+  padding: .65rem .8rem;
+  border: 1px solid var(--wdqs-border);
+  border-radius: .5rem;
+  background: #fff;
   color: var(--wdqs-ink);
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .12);
+  font-size: .92rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .wdqs-account-details[open] .wdqs-account-tip {
+    animation: wdqs-account-tip-enter 160ms ease-out;
+  }
+}
+
+@keyframes wdqs-account-tip-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .wdqs-shell .btn-primary {
