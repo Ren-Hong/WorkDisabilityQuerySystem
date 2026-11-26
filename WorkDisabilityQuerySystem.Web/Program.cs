@@ -20,6 +20,7 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPermanentDisabilityRepository>(_ =>
     new PermanentDisabilityRepository(builder.Configuration.GetConnectionString("WdqsDatabase")));
 builder.Services.AddScoped<IPermanentDisabilityService, PermanentDisabilityService>();
+builder.Services.AddScoped<ICombinedRatingsService, CombinedRatingsService>();
 builder.Services.AddScoped<AccountCookieEvents>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -113,4 +114,5 @@ static string ReadPassword()
         }
     }
 }
+
 
