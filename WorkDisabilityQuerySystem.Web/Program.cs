@@ -14,11 +14,28 @@ using WorkDisabilityQuerySystem.Web.Security;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IPasswordVerifier, BCryptPasswordVerifier>();
-builder.Services.AddScoped<IAccountRepository>(_ =>
-    new AccountRepository(builder.Configuration.GetConnectionString("WdqsDatabase")));
+if (string.Equals(builder.Configuration["Wdqs:Storage"], "Sql", StringComparison.OrdinalIgnoreCase))
+{
+    var connectionString = builder.Configuration.GetConnectionString("WdqsDatabase");
+    builder.Services.AddScoped<IAccountRepository>(_ => new AccountRepository(connectionString));
+    builder.Services.AddScoped<IPermanentDisabilityRepository>(_ => new PermanentDisabilityRepository(connectionString));
+}
+else
+{
+    var dataPath = Path.Combine(builder.Environment.ContentRootPath, "Data");
+    var accountPath = Path.Combine(dataPath, "accounts.json");
+    if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME")) &&
+        Environment.GetEnvironmentVariable("HOME") is { Length: > 0 } azureHome)
+    {
+        accountPath = Path.Combine(azureHome, "data", "wdqs", "accounts.json");
+    }
+
+    builder.Services.AddSingleton<IAccountRepository>(_ =>
+        new JsonAccountRepository(accountPath, Path.Combine(dataPath, "accounts.seed.json")));
+    builder.Services.AddSingleton<IPermanentDisabilityRepository>(_ =>
+        new JsonPermanentDisabilityRepository(Path.Combine(dataPath, "lookups.json")));
+}
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IPermanentDisabilityRepository>(_ =>
-    new PermanentDisabilityRepository(builder.Configuration.GetConnectionString("WdqsDatabase")));
 builder.Services.AddScoped<IPermanentDisabilityService, PermanentDisabilityService>();
 builder.Services.AddScoped<ICombinedRatingsService, CombinedRatingsService>();
 builder.Services.AddScoped<AccountCookieEvents>();

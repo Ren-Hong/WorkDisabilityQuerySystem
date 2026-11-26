@@ -6,6 +6,8 @@
     <UserSecretsId>WorkDisabilityQuerySystem.Web-c353fc8c-6d6b-4038-889b-92351e984a93</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <Content Update="Data/lookups.json;Data/accounts.seed.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Update="Data/accounts.json" CopyToPublishDirectory="Never" />
     <ProjectReference Include="../WorkDisabilityQuerySystem.Application/WorkDisabilityQuerySystem.Application.csproj" />
     <ProjectReference Include="../WorkDisabilityQuerySystem.Infrastructure/WorkDisabilityQuerySystem.Infrastructure.csproj" />
   </ItemGroup>
