@@ -15,8 +15,9 @@ public sealed class PermanentDisabilityRepository(string? connectionString) : IP
         await using var connection = new SqlConnection(_connectionString);
         var command = new CommandDefinition(
             """
-            SELECT TOP (20) VCHIMPAIRMENTCODE AS Id,
-                COALESCE(NULLIF(NVCHDESCRIPTIONZH, N''), NVCHDESCRIPTIONEN) AS Label,
+            SELECT VCHIMPAIRMENTCODE AS Id,
+                CASE WHEN NULLIF(NVCHDESCRIPTIONZH, N'') IS NULL THEN NVCHDESCRIPTIONEN
+                     ELSE CONCAT(NVCHDESCRIPTIONZH, N' · ', NVCHDESCRIPTIONEN) END AS Label,
                 CONCAT(VCHIMPAIRMENTCODE, N' · FEC ', INTFECRANK) AS Detail
             FROM dbo.WDQSIMPAIRMENTTBL
             WHERE @Term = N'' OR CHARINDEX(@Term, VCHIMPAIRMENTCODE) > 0 OR CHARINDEX(@Term, NVCHDESCRIPTIONEN) > 0
@@ -29,14 +30,15 @@ public sealed class PermanentDisabilityRepository(string? connectionString) : IP
         return results.AsList();
     }
 
-    public async Task<IReadOnlyList<LookupOption>> SearchOccupationsAsync(string term, CancellationToken token)
+    public async Task<IReadOnlyList<OccupationLookupOption>> SearchOccupationsAsync(string term, CancellationToken token)
     {
         await using var connection = new SqlConnection(_connectionString);
         var command = new CommandDefinition(
             """
-            SELECT TOP (20) CONVERT(varchar(36), UIDOCCUPATIONID) AS Id,
-                COALESCE(NULLIF(NVCHOCCUPATIONNAMEZH, N''), NVCHOCCUPATIONNAMEEN) AS Label,
-                CONCAT(NVCHINDUSTRYEN, N' · 群組 ', INTOCCGROUPNO) AS Detail
+            SELECT CONVERT(varchar(36), UIDOCCUPATIONID) AS Id,
+                CASE WHEN NULLIF(NVCHOCCUPATIONNAMEZH, N'') IS NULL THEN NVCHOCCUPATIONNAMEEN
+                     ELSE CONCAT(NVCHOCCUPATIONNAMEZH, N' · ', NVCHOCCUPATIONNAMEEN) END AS Label,
+                COALESCE(NVCHINDUSTRYEN, N'') AS Detail, INTOCCGROUPNO AS GroupNumber
             FROM dbo.WDQSOCCUPATIONTBL
             WHERE @Term = N'' OR CHARINDEX(@Term, NVCHOCCUPATIONNAMEEN) > 0 OR CHARINDEX(@Term, NVCHOCCUPATIONNAMEZH) > 0
                OR CHARINDEX(@Term, NVCHINDUSTRYEN) > 0 OR CONVERT(varchar(12), INTOCCGROUPNO) = @Term
@@ -45,7 +47,7 @@ public sealed class PermanentDisabilityRepository(string? connectionString) : IP
             """,
             new { Term = term },
             cancellationToken: token);
-        var results = await connection.QueryAsync<LookupOption>(command);
+        var results = await connection.QueryAsync<OccupationLookupOption>(command);
         return results.AsList();
     }
 

@@ -15,17 +15,27 @@ public sealed class JsonPermanentDisabilityRepository(string path) : IPermanentD
         return Task.FromResult<IReadOnlyList<LookupOption>>(_data.Impairments
             .Where(row => Contains(row.Code, term) || Contains(row.English, term) || Contains(row.Chinese, term))
             .OrderByDescending(row => Equal(row.Code, term))
-            .Take(20).Select(ToOption).ToArray());
+            .ThenBy(row => row.Code, StringComparer.Ordinal)
+            .Select(row => ToOption(row) with
+            {
+                Label = string.IsNullOrWhiteSpace(row.Chinese) ? row.English : row.Chinese + " · " + row.English
+            }).ToArray());
     }
 
-    public Task<IReadOnlyList<LookupOption>> SearchOccupationsAsync(string term, CancellationToken token)
+    public Task<IReadOnlyList<OccupationLookupOption>> SearchOccupationsAsync(string term, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
-        return Task.FromResult<IReadOnlyList<LookupOption>>(_data.Occupations
+        return Task.FromResult<IReadOnlyList<OccupationLookupOption>>(_data.Occupations
             .Where(row => Contains(row.English, term) || Contains(row.Chinese, term) ||
                           Contains(row.Industry, term) || row.GroupNumber.ToString() == term)
             .OrderByDescending(row => Equal(row.English, term) || Equal(row.Chinese, term))
-            .Take(20).Select(ToOption).ToArray());
+            .ThenBy(row => row.English, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.Industry, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(row => row.GroupNumber)
+            .ThenBy(row => row.Id)
+            .Select(row => new OccupationLookupOption(row.Id.ToString(),
+                string.IsNullOrWhiteSpace(row.Chinese) ? row.English : row.Chinese + " · " + row.English,
+                row.Industry, row.GroupNumber)).ToArray());
     }
 
     public Task<LookupOption?> FindImpairmentAsync(string code, CancellationToken token)

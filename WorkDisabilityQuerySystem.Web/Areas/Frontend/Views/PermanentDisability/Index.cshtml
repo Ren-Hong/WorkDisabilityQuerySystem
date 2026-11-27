@@ -3,62 +3,60 @@
     ViewData["Title"] = "永久失能查表";
 }
 <div class="rating-page mx-auto">
-    <form id="rating-form" asp-area="Frontend" asp-controller="PermanentDisabilityApi" asp-action="Calculate" method="post" class="card border-0 shadow-sm">
-        <div class="card-body p-3 p-md-4">
-            <div data-rating-error class="text-danger" role="alert"></div>
-            <div class="row g-3">
-                <div class="col-12 col-md-6">
-                    <div class="rating-field mb-3">
-                        <label asp-for="Wpi" class="form-label">全人損傷百分比（WPI）</label>
-                        <div class="input-group">
-                            <input asp-for="Wpi" class="form-control" type="number" min="1" max="100" step="1" inputmode="numeric" required />
-                            <span class="input-group-text">%</span>
-                        </div>
-                        <span asp-validation-for="Wpi" class="text-danger"></span>
-                    </div>
-                    <div class="rating-field mb-3">
-                        <label asp-for="ImpairmentCode" class="form-label">損傷項目</label>
-                        <select asp-for="ImpairmentCode" class="form-select" data-rating-select
-                                data-url="@Url.Action("Impairments", "PermanentDisabilityApi")"
-                                data-placeholder="搜尋損傷編碼或名稱">
-                            <option value=""></option>
-                        </select>
-                        <span asp-validation-for="ImpairmentCode" class="text-danger"></span>
-                    </div>
-                    <div id="affected-function" class="rating-field mt-3" hidden>
-                        <label asp-for="AffectedFunction" class="form-label">受影響的功能</label>
-                        <select asp-for="AffectedFunction" class="form-select">
-                            <option value="">請選擇</option>
-                            <option value="speech">吞嚥或說話</option>
-                            <option value="neck">頭部轉動</option>
-                            <option value="shoulder">肩部活動</option>
-                        </select>
-                        <span asp-validation-for="AffectedFunction" class="text-danger"></span>
-                    </div>
+    <form id="rating-form" asp-area="Frontend" asp-controller="PermanentDisabilityApi" asp-action="Calculate" method="post">
+        <div data-rating-error class="text-danger" role="alert"></div>
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6 rating-field rating-number-field">
+                <label asp-for="Wpi" class="form-label">全人損傷百分比（WPI）</label>
+                <div class="input-group">
+                    <input asp-for="Wpi" class="form-control" type="number" min="1" max="100" step="1" inputmode="numeric" required />
+                    <span class="input-group-text">%</span>
                 </div>
-                <div class="col-12 col-md-6">
-                    <div class="rating-field mb-3">
-                        <label asp-for="OccupationId" class="form-label">職業與行業</label>
-                        <select asp-for="OccupationId" class="form-select" data-rating-select
-                                data-url="@Url.Action("Occupations", "PermanentDisabilityApi")"
-                                data-placeholder="搜尋職稱、行業或群組">
-                            <option value=""></option>
-                        </select>
-                        <span asp-validation-for="OccupationId" class="text-danger"></span>
-                    </div>
-                    <div class="rating-field">
-                        <label asp-for="Age" class="form-label">受傷時年齡</label>
-                        <div class="input-group">
-                            <input asp-for="Age" class="form-control" type="number" min="0" step="1" inputmode="numeric" required />
-                            <span class="input-group-text">歲</span>
-                        </div>
-                        <span asp-validation-for="Age" class="text-danger"></span>
-                    </div>
+                <span asp-validation-for="Wpi" class="text-danger"></span>
+            </div>
+            <div class="col-12 col-md-6 rating-field rating-number-field">
+                <label asp-for="Age" class="form-label">受傷時年齡</label>
+                <div class="input-group">
+                    <input asp-for="Age" class="form-control" type="number" min="0" step="1" inputmode="numeric" required />
+                    <span class="input-group-text">歲</span>
+                </div>
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+        </div>
+
+        <section class="card border-0 shadow-sm mb-4" aria-label="診斷">
+            <div class="card-body p-3 p-md-4">
+                <input asp-for="ImpairmentCode" type="hidden" data-url="@Url.Action("Impairments", "PermanentDisabilityApi")" />
+                <div class="rating-selection-row">
+                    <button id="choose-impairment" type="button" class="btn btn-outline-primary" aria-haspopup="dialog">選擇診斷</button>
+                    <p id="impairment-summary" class="mb-0" aria-live="polite">尚未選擇診斷</p>
+                </div>
+                <span asp-validation-for="ImpairmentCode" class="text-danger d-block"></span>
+                <div id="affected-function" class="rating-field mt-3" hidden>
+                    <label asp-for="AffectedFunction" class="form-label">受影響的功能</label>
+                    <select asp-for="AffectedFunction" class="form-select">
+                        <option value="">請選擇</option>
+                        <option value="speech">吞嚥或說話</option>
+                        <option value="neck">頭部轉動</option>
+                        <option value="shoulder">肩部活動</option>
+                    </select>
+                    <span asp-validation-for="AffectedFunction" class="text-danger"></span>
                 </div>
             </div>
-            <div class="d-grid d-md-flex mt-4">
-                <button type="submit" class="btn btn-primary px-4">查詢 PD</button>
+        </section>
+
+        <section class="card border-0 shadow-sm" aria-label="職業">
+            <div class="card-body p-3 p-md-4">
+                <input asp-for="OccupationId" type="hidden" data-url="@Url.Action("Occupations", "PermanentDisabilityApi")" />
+                <div class="rating-selection-row">
+                    <button id="choose-occupation" type="button" class="btn btn-outline-primary" aria-haspopup="dialog">選擇職業</button>
+                    <p id="occupation-summary" class="mb-0" aria-live="polite">尚未選擇職業</p>
+                </div>
+                <span asp-validation-for="OccupationId" class="text-danger d-block"></span>
             </div>
+        </section>
+        <div class="d-grid d-md-flex mt-4">
+            <button type="submit" class="btn btn-primary px-4">查詢 PD</button>
         </div>
     </form>
     <section id="rating-result" class="card border-0 shadow-sm mt-4" aria-labelledby="rating-result-title" tabindex="-1" hidden>
@@ -76,14 +74,34 @@
                 <dd class="col-sm-5" data-result="pd"></dd>
             </dl>
         </div>
-    </section></div>
-@section Styles {
-    <link rel="stylesheet" href="~/lib/select2/select2.min.css" asp-append-version="true" />
-}
+    </section>
+</div>
 
+<div id="rating-picker" class="modal fade rating-picker" tabindex="-1" aria-labelledby="picker-title" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content rating-picker-content shadow p-3 p-sm-4">
+            <div class="d-flex gap-3 align-items-start justify-content-between">
+                <h2 id="picker-title" class="h5 mb-2" tabindex="-1"></h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+            </div>
+            <p id="picker-path" class="small text-body-secondary mb-2" hidden></p>
+            <p id="picker-status" class="small text-body-secondary mb-2" role="status"></p>
+            <div id="picker-choices" class="list-group mb-3"></div>
+            <div id="picker-results" hidden>
+                <label for="picker-search" class="form-label">搜尋</label>
+                <input id="picker-search" type="search" class="form-control mb-2" maxlength="100" aria-controls="picker-items" />
+                <p id="picker-count" class="small text-body-secondary mb-2" role="status"></p>
+                <div id="picker-items" class="list-group" aria-label="搜尋結果"></div>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <button id="picker-back" type="button" class="btn btn-outline-secondary">返回</button>
+                <button type="button" class="btn btn-outline-secondary ms-auto" data-bs-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts {
-    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
-    <script src="~/lib/select2/select2.min.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
     <script src="~/js/disability-rating.js" asp-append-version="true"></script>
 }
 

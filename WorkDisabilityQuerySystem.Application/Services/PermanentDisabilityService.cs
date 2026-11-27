@@ -12,7 +12,7 @@ public sealed class PermanentDisabilityService(IPermanentDisabilityRepository re
         term is { Length: > 100 }
             ? [] : await repository.SearchImpairmentsAsync(term?.Trim() ?? string.Empty, token);
 
-    public async Task<IReadOnlyList<LookupOption>> SearchOccupationsAsync(string? term, CancellationToken token) =>
+    public async Task<IReadOnlyList<OccupationLookupOption>> SearchOccupationsAsync(string? term, CancellationToken token) =>
         term is { Length: > 100 }
             ? [] : await repository.SearchOccupationsAsync(term?.Trim() ?? string.Empty, token);
 
